@@ -3,6 +3,8 @@ import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+import { Paho } from '../assets/js/paho-mqtt';
+
 import { TabsPage } from '../pages/tabs/tabs';
 
 @Component({
