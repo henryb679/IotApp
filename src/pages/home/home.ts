@@ -1,73 +1,61 @@
-import { Component } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { MqttBrokerProvider} from "../../providers/mqtt-broker/mqtt-broker";
+import { Events } from 'ionic-angular';
+
+import { Chart } from "chart.js";
+
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
+export class HomePage{
+  @ViewChild("barCanvas") barCanvas: ElementRef;
 
-  private mqttStatus: string = 'Disconnected';
-  private mqttClient: any = null;
-  private message: any = '';
-  private messageToSend: string = 'Type your message here.';
-  private topic: string = 'swen325/a3';
-  private clientId: string = 'baihenrconnection234'; // this string must be unique to every client
+  public message: '';
 
-  constructor(public navCtrl: NavController) {
+
+  private barChart: Chart;
+
+  constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events) {
+    this.events.subscribe('messages', (message) => {
+      // console.log(message);
+      this.message = message;
+
+      // To remove if it doesn't work
+      // this.loadBatteryGraph();
+    });
+
+    setInterval(this.update.bind(this), 1000);
 
   }
 
-  public connect() {
-    this.mqttStatus = 'Connecting...';
-    this.mqttClient = new Paho.MQTT.Client('barretts.ecs.vuw.ac.nz', 8883, '/mqtt', this.clientId);
 
-    // set callback handlers
-    this.mqttClient.onConnectionLost = this.onConnectionLost;
-    this.mqttClient.onMessageArrived = this.onMessageArrived;
-
-    // connect the client
-    console.log('Connecting to mqtt via websocket');
-    this.mqttClient.connect({timeout:10, useSSL:false, onSuccess:this.onConnect, onFailure:this.onFailure});
-  }
-
-  public disconnect() {
-    if(this.mqttStatus == 'Connected') {
-      this.mqttStatus = 'Disconnecting...';
-      this.mqttClient.disconnect();
-      this.mqttStatus = 'Disconnected';
-    }
-  }
-
-  public sendMessage() {
-    if(this.mqttStatus == 'Connected') {
-      this.mqttClient.publish(this.topic, this.messageToSend);
-    }
-  }
-
-  public onConnect = () => {
-    console.log('Connected');
-    this.mqttStatus = 'Connected';
-
-    // subscribe
-    this.mqttClient.subscribe(this.topic);
-  }
-
-  public onFailure = (responseObject) => {
-    console.log('Failed to connect');
-    this.mqttStatus = 'Failed to connect';
+  ionViewDidLoad(){
+    // this.loadBatteryGraph();
   }
 
 
-  public onConnectionLost = (responseObject) => {
-    if (responseObject.errorCode !== 0) {
-      this.mqttStatus = 'Disconnected';
-    }
+  public update(){
+    // console.log(this.mqttBrokerProvider.getData());
+    this.mqttBrokerProvider.getData();
   }
 
-  public onMessageArrived = (message) => {
-    console.log('Received message');
-    this.message = message.payloadString;
+  public getData(){
+    return this.message;
   }
 
+  // public getBatteryData(){
+  //   return this.mqttBrokerProvider.getBatteryLevel();
+  // }
+
+  public getLastSeenLocation(){
+    // console.log(this.mqttBrokerProvider.lastSeenLocation().toString());
+    return this.mqttBrokerProvider.lastSeenLocation();
+  }
+
+  public getMovements(){
+    return this.mqttBrokerProvider.movements();
+  }
 }

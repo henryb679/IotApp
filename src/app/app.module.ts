@@ -4,18 +4,20 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { BatteryStatus } from '../pages/batteryStatus/batteryStatus';
-import { ContactPage } from '../pages/contact/contact';
+import { TimeSpent } from '../pages/timeSpent/timeSpent';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { MqttBrokerProvider } from '../providers/mqtt-broker/mqtt-broker';
+
 
 @NgModule({
   declarations: [
     MyApp,
     BatteryStatus,
-    ContactPage,
+    TimeSpent,
     HomePage,
     TabsPage
   ],
@@ -27,14 +29,15 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   entryComponents: [
     MyApp,
     BatteryStatus,
-    ContactPage,
+    TimeSpent,
     HomePage,
     TabsPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    MqttBrokerProvider,
   ]
 })
 export class AppModule {}

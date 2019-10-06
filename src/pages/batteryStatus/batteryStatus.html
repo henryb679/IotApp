@@ -1,11 +1,30 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      About
+      Battery Status
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
+
+  <ion-card>
+    <ion-card-header>Battery Levels:</ion-card-header>
+    <ion-card-content>Living: {{getBatteryData().living}}</ion-card-content>
+    <ion-card-content>Kitchen: {{getBatteryData().kitchen}}</ion-card-content>
+    <ion-card-content>Dining: {{getBatteryData().dining}}</ion-card-content>
+    <ion-card-content>Toilet: {{getBatteryData().toilet}}</ion-card-content>
+    <ion-card-content>Bedroom: {{getBatteryData().bedroom}}</ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #barCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+
 
 </ion-content>
