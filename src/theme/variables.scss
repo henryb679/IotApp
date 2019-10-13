@@ -34,13 +34,20 @@ $app-direction: ltr;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
-  secondary:  #32db64,
-  danger:     #f53d3d,
-  light:      #f4f4f4,
-  dark:       #222
+  primary:    #026873,
+  secondary:  #04D9D9,
+  danger:     #F21D1D,
+  light:      #026873,
+  dark:       #022340,
+
+
 );
 
+// Sets the size of the spinner
+ion-spinner > svg {
+  width: 80px !important;
+  height: 80px !important;
+}
 
 // App iOS Variables
 // --------------------------------------------------

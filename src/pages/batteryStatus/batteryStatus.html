@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
+      <ion-title style="text-align: center;">
       Battery Status
     </ion-title>
   </ion-navbar>
@@ -17,6 +17,9 @@
     <ion-card-content>Bedroom: {{getBatteryData().bedroom}}</ion-card-content>
   </ion-card>
 
+
+  <button (click)="notifcation()">eiwvnjk</button>
+
   <ion-card>
     <ion-card-header>
     </ion-card-header>
@@ -24,6 +27,26 @@
       <canvas #barCanvas></canvas>
     </ion-card-content>
   </ion-card>
+
+  <!-- <ion-card>
+    <ion-card-header>
+
+    </ion-card-header>
+
+    <ion-card-content>
+      <circle-progress
+  [percent]=
+  [radius]="100"
+  [outerStrokeWidth]="16"
+  [innerStrokeWidth]="8"
+  [outerStrokeColor]="'#78C000'"
+  [innerStrokeColor]="'#C7E596'"
+  [animation]="true"
+  [animationDuration]="300"
+></circle-progress>
+    </ion-card-content>
+  </ion-card> -->
+
 
 
 

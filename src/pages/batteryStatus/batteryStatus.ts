@@ -2,6 +2,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Events, NavController} from 'ionic-angular';
 import {MqttBrokerProvider} from "../../providers/mqtt-broker/mqtt-broker";
 import { Chart } from "chart.js";
+import { HomePage } from '../home/home';
 
 @Component({
   selector: 'page-about',
@@ -12,22 +13,28 @@ export class BatteryStatus {
 
   public message: '';
 
-
   private barChart: Chart;
 
+
+  
   constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events) {
+    // this.events.subscribe('homePage', (result) => {
+
+    //   // if(result){
+    //   //   this.returnHomePage();
+    //   // }
+    // });
+
     this.events.subscribe('messages', (message) => {
       // console.log(message);
       this.message = message;
 
-      // To remove if it doesn't work
       this.loadBatteryGraph();
     });
 
     setInterval(this.update.bind(this), 1000);
 
   }
-
 
   ionViewDidLoad(){
     this.loadBatteryGraph();
@@ -41,7 +48,7 @@ export class BatteryStatus {
         datasets: [
           {
             label: "% - Current battery life",
-            // FIX ME
+      
             data: [this.getBatteryData().living, this.getBatteryData().kitchen, 
               this.getBatteryData().dining, this.getBatteryData().toilet, this.getBatteryData().bedroom],
             backgroundColor: [
@@ -70,6 +77,7 @@ export class BatteryStatus {
           yAxes: [
             {
               ticks: {
+                beginAtZero: true,
                 min: 0,
                 max: 100,
               }
@@ -95,6 +103,11 @@ export class BatteryStatus {
 
   public getBatteryData(){
     return this.mqttBrokerProvider.getBatteryLevel();
+  }
+
+  // Return to the home page
+  public returnHomePage(){
+    this.navCtrl.parent.select(0);
   }
 
 }

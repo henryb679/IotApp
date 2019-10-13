@@ -1,71 +1,107 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
+    <ion-title style="text-align: center;">
       Home
     </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-<!--  <ion-card>-->
-<!--    <ion-card-content>Status: <b>{{this.mqttStatus}}</b></ion-card-content>-->
-<!--  </ion-card>-->
-
-  <ion-row justify-content-center align-items-center>
-<!--    <button ion-button (click)="connect()">Connect</button>-->
-<!--    <button ion-button (click)="disconnect()">Disconnect</button>-->
-
-  </ion-row>
+<ion-content>
 
   <ion-card>
-    <ion-card-header>Last Seen Location</ion-card-header>
-    <ion-card-content>{{getLastSeenLocation()}}</ion-card-content>
+    <ion-item color="primary">
+      <ion-row>
+        <ion-col col-6>
+          <ion-row>
+            <h2 style="color:white">Location</h2>
+          </ion-row>
+          <br>
+          <ion-row>
+            <h1 style="color: white; font-size: 20px;"><b>{{getLastSeenLocation()}}</b></h1>
+          </ion-row>
+          <ion-row>
+            <p style="color: white">Last seen location </p>
+          </ion-row>
+        </ion-col>
+
+
+        <ion-col col-6>
+          <ion-row>
+            <h2 style="color:white">Time</h2>
+          </ion-row>
+          <br>
+          <ion-row>
+            <h1 style="color: white; font-size: 20px;"><b>{{getTime()}}</b> Minutes</h1>
+          </ion-row>
+          <ion-row>
+            <p style="color: white">Since last motion</p>
+          </ion-row>
+        </ion-col>
+
+      </ion-row>
+
+    </ion-item>
   </ion-card>
 
-  <ion-card>
-    <ion-card-header>Time since last motion</ion-card-header>
-    <ion-card-content>TO DO</ion-card-content>
-  </ion-card>
-
-  <ion-card>
+  <!-- <ion-card>
     <ion-card-header>Message Received:</ion-card-header>
     <ion-card-content>{{getData()}}</ion-card-content>
-  </ion-card>
+  </ion-card> -->
 
+  <ion-card *ngIf="!movementBool()">
+      <ion-card-header>
+        <h2>No movements have been tracked yet.</h2>
+        <p>Please hold</p>
 
-  <ion-card>
-<!--    <ion-card-header>{{this.}}</ion-card-header>-->
-<!--    <ion-textarea [(ngModel)]='messageToSend'>{{this.messageToSend}}</ion-textarea>-->
-  </ion-card>
+      </ion-card-header>
+      <ion-card-content>
+          <ion-spinner style="text-align: center;"name="crescent"></ion-spinner>
+      </ion-card-content>
+      
+      <br>
+      <br>
+      <br>
+    </ion-card>
 
-  <ion-row justify-content-center align-items-center>
-<!--    <button ion-button full (click)="sendMessage()">Send Message</button>-->
-  </ion-row>
-
-  <ion-card>
-    <h1>TODO: visualisation of total number of movements across different part of the house</h1>
-
-    <p> USE donut</p>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>Total Number of movement:</ion-card-header>
-    <ion-card-content>Living: {{getMovements().living}}</ion-card-content>
-    <ion-card-content>Kitchen: {{getMovements().kitchen}}</ion-card-content>
-    <ion-card-content>Dining: {{getMovements().dining}}</ion-card-content>
-    <ion-card-content>Toilet: {{getMovements().toilet}}</ion-card-content>
-    <ion-card-content>Bedroom: {{getMovements().bedroom}}</ion-card-content>
-
-  </ion-card>
-
-
-  <ion-card>
+  <ion-card *ngIf="movementBool()">
     <ion-card-header>
-      Bar Chart
+      <h1>Visualization of Movements</h1>
     </ion-card-header>
     <ion-card-content>
-      <canvas #barCanvas></canvas>
+      <canvas #doughnutCanvas></canvas>
     </ion-card-content>
+  </ion-card>
+  <ion-card>
+
+    <ion-item color="dark">
+      <h2 style="color: white">Statistical data of # of Movements</h2>
+  
+      <ion-row padding>
+        <ion-col padding>
+          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF;">Living: <b>{{getMovements().living}}</b>
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF">Kitchen: <b>{{getMovements().kitchen}}</b>
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF">Dining: <b>{{getMovements().dining}}</b>
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF">Toilet: <b>{{getMovements().toilet}}</b>
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;">Bedroom:
+            <b>{{getMovements().bedroom}}</b></p>
+        </ion-col>
+      </ion-row>
+    </ion-item>
   </ion-card>
 
 
