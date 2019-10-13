@@ -37,9 +37,9 @@ export class HomePage {
 
   ionViewDidLoad() {
 
-    if(this.movementBool()){
+    // if(this.movementBool()){
       this.loadNoMovementsGraph();
-    }
+    // }
   }
 
   private loadNoMovementsGraph() {

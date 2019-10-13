@@ -2,7 +2,6 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Events, NavController} from 'ionic-angular';
 import {MqttBrokerProvider} from "../../providers/mqtt-broker/mqtt-broker";
 import { Chart } from "chart.js";
-import { HomePage } from '../home/home';
 
 @Component({
   selector: 'page-about',

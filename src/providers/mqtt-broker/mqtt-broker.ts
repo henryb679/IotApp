@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {environment} from "../../../enviroment/environment";
-import { Events, AlertController, Alert } from 'ionic-angular';
-
+import { Events } from 'ionic-angular';
+import { P } from '@angular/core/src/render3';
 /*
   Generated class for the MqttBrokerProvider provider.
 
@@ -11,12 +12,17 @@ import { Events, AlertController, Alert } from 'ionic-angular';
 @Injectable()
 export class MqttBrokerProvider {
 
+  // constructor(public http: HttpClient) {
+  //   console.log('Hello MqttBrokerProvider Provider');
+  // }
+
   private mqttStatus: string = 'Disconnected';
   private mqttClient: any = null;
   public message: any = '';
   private messageToSend: string = 'Type your message here.';
   private topic: string = environment.mqttConfig.topic;
-  private clientId: string = "sdvdvdsrbdfbfdbfd";
+  private clientId: string = environment.mqttConfig.clientId;
+
 
   private currentBatteryLevel = {
     'living': undefined,
@@ -40,23 +46,19 @@ export class MqttBrokerProvider {
   public lastTimeInMotion: Date = new Date();
 
 
-  constructor(public events: Events, public alert: AlertController) {
-    this.onConnectionLost = this.onConnectionLost.bind(this);
+  constructor(public events: Events) {
     this.onMessageArrived = this.onMessageArrived.bind(this);
 
     this.connect();
-    
-    // setInterval(this.notifcation.bind(this), 5000);
   }
 
   public connect() {
     this.mqttStatus = 'Connecting...';
     // this.mqttClient = new Paho.MQTT.Client('broker.mqttdashboard.com', 8000, '/mqtt', this.clientId);
-      // this.mqttClient = new Paho.MQTT.Client('localhost', 8883, '/mqtt', this.clientId);
-    this.mqttClient = new Paho.MQTT.Client('localhost', 8883, '/mqtt', 'henryvmsd');
+    this.mqttClient = new Paho.MQTT.Client('barretts.ecs.vuw.ac.nz', 8883, '/mqtt', this.clientId);
 
     // set callback handlers
-
+    this.mqttClient.onConnectionLost = this.onConnectionLost;
     this.mqttClient.onMessageArrived = this.onMessageArrived;
 
     // connect the client

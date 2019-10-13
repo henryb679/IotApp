@@ -6,7 +6,16 @@
   </ion-navbar>
 </ion-header>
 
+
+
+
 <ion-content>
+
+    <!-- <ion-card>
+        <ion-card-header>Message Received:</ion-card-header>
+        <ion-card-content>{{getData()}}</ion-card-content>
+      </ion-card> -->
+    
 
   <ion-card>
     <ion-item color="primary">
@@ -48,22 +57,22 @@
     <ion-card-content>{{getData()}}</ion-card-content>
   </ion-card> -->
 
-  <ion-card *ngIf="!movementBool()">
+  <!-- <ion-card *ngIf="!movementBool()">
       <ion-card-header>
         <h2>No movements have been tracked yet.</h2>
         <p>Please hold</p>
 
       </ion-card-header>
-      <ion-card-content>
+       <ion-card-content>
           <ion-spinner style="text-align: center;"name="crescent"></ion-spinner>
-      </ion-card-content>
+      </ion-card-content> 
       
       <br>
       <br>
       <br>
-    </ion-card>
+    </ion-card> -->
 
-  <ion-card *ngIf="movementBool()">
+  <ion-card>
     <ion-card-header>
       <h1>Visualization of Movements</h1>
     </ion-card-header>
