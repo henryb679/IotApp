@@ -1,18 +1,139 @@
 <ion-header>
   <ion-navbar>
-      <ion-title style="text-align: center;">
+    <ion-title style="text-align: center;">
       Battery Analytics
     </ion-title>
   </ion-navbar>
 </ion-header>
-
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
-    </ion-item>
 
-  </ion-list>
+  <!-- Shows the battery data in the form of a line graph -->
+  <ion-card>
+    <ion-card-header>
+      <h2>Battery data for last 10 intervals</h2>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #barCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Shows the min recorded battery data as whole numbers -->
+  <ion-card>
+    <ion-item color="dark">
+      <h2 style="color: white">Min recorded Battery levels</h2>
+
+      <ion-row padding>
+        <ion-col padding>
+          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF; text-align: center;">Living:
+            <b>{{getMinBatteryLevel().living}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF; text-align: center;">Kitchen:
+            <b>{{getMinBatteryLevel().kitchen}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF; text-align: center;">Dining:
+            <b>{{getMinBatteryLevel().dining}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF; text-align: center;">Toilet:
+            <b>{{getMinBatteryLevel().toilet}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;">Bedroom:
+            <b>{{getMinBatteryLevel().bedroom}}</b> %</p>
+        </ion-col>
+      </ion-row>
+    </ion-item>
+  </ion-card>
+
+  <!-- Shows the average recorded battery data as whole numbers -->
+  <ion-card>
+    <ion-item color="dark">
+      <h2 style="color: white">Average Battery levels</h2>
+      <ion-row padding>
+        <ion-col padding>
+          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF; text-align: center;">Living:
+            <b>{{averageBatteryLevel().living}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF; text-align: center;">Kitchen:
+            <b>{{averageBatteryLevel().kitchen}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF; text-align: center;">Dining:
+            <b>{{averageBatteryLevel().dining}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF; text-align: center;">Toilet:
+            <b>{{averageBatteryLevel().toilet}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;">Bedroom:
+            <b>{{averageBatteryLevel().bedroom}}</b> %</p>
+        </ion-col>
+      </ion-row>
+    </ion-item>
+  </ion-card>
+
+  <!-- Shows the mas recorded battery data as whole numbers -->
+  <ion-card>
+    <ion-item color="dark">
+      <h2 style="color: white">Max recorded Battery levels</h2>
+
+      <ion-row padding>
+        <ion-col padding>
+          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF; text-align: center;">Living:
+            <b>{{getMaxBatteryLevel().living}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF; text-align: center;">Kitchen:
+            <b>{{getMaxBatteryLevel().kitchen}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF; text-align: center;">Dining:
+            <b>{{getMaxBatteryLevel().dining}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF; text-align: center;">Toilet:
+            <b>{{getMaxBatteryLevel().toilet}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;">Bedroom:
+            <b>{{getMaxBatteryLevel().bedroom}}</b> %</p>
+        </ion-col>
+      </ion-row>
+    </ion-item>
+  </ion-card>
+
+  <ion-card>
+    <ion-item color="primary">
+      <ion-row padding>
+        <ion-col padding>
+          <h2 style="color: #FFFFFF"><b>Battery Replacement Suggestions</b></h2>
+          <p *ngIf="batterySuggestion1().diff >= 75" style="color: #FFFFFF">It is advised that this rooms's battery</p>
+          <p *ngIf="batterySuggestion1().diff >= 75">should be replaced</p>
+          <p *ngIf="batterySuggestion1().diff >= 75"><b>room: </b>{{batterySuggestion1().roomName}}</p>
+          <p *ngIf="batterySuggestion1().diff >= 75">As the recorded battery difference is about </p>
+          <p *ngIf="batterySuggestion1().diff >= 75">{{batterySuggestion1().diff}} %</p>
+          <p *ngIf="batterySuggestion1().diff < 75">No Suggestions are available ATM</p>
+
+        </ion-col>
+      </ion-row>
+
+    </ion-item>
+  </ion-card>
+
 </ion-content>

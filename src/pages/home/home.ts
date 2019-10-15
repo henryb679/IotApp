@@ -2,36 +2,40 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { MqttBrokerProvider } from "../../providers/mqtt-broker/mqtt-broker";
 import { Events } from 'ionic-angular';
-import {AlertController} from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 import { Chart } from "chart.js";
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
+
+/**
+ * The home page shows the following aspects
+ * - Last seen location
+ * - Last time since inactivity
+ * - Views of number of movements throughout the rooms
+ */
 export class HomePage {
   @ViewChild("doughnutCanvas") doughnutCanvas: ElementRef;
 
   public message: '';
   private doughnutChart: Chart;
-
   private time;
 
+  /**
+   * Constructor
+   * @param navCtrl 
+   * @param mqttBrokerProvider 
+   * @param events 
+   * @param alert 
+   */
   constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events,
     public alert:AlertController) {
     this.events.subscribe('messages', (message) => {
-      // console.log(message);
+
       this.message = message;
-
       this.time = this.mqttBrokerProvider.calculateLastSeenTime(this.mqttBrokerProvider.getTimeSinceLastMotion());
-
-      // if(this.lastSeen > 0){
-      //   console.log('WORKING: ' + this.lastSeen);
-      // }
-
-      // if(this.time > 1){
-      //   // this.notifcation();
-      // }
 
       this.loadNoMovementsGraph();
     });
@@ -39,23 +43,12 @@ export class HomePage {
     setInterval(this.update.bind(this), 1000);
   }
 
-
-  async notifcation(){
-    const alert = await this.alert.create({
-      title: 'test',
-      subTitle: 'vewve',
-      buttons: ["OK"]
-    });
-    alert.present();
-  }
-
+  // Ensures the graph is loaded once the page is loaded.
   ionViewDidLoad() {
-
-    // if(this.movementBool()){
-      this.loadNoMovementsGraph();
-    // }
+     this.loadNoMovementsGraph();
   }
 
+  // Generates the number of movement graph.
   private loadNoMovementsGraph() {
     this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
       type: "doughnut",
@@ -74,7 +67,6 @@ export class HomePage {
               "#84D904",
               "#F58853"
             ],
-            // hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#FF6384", "#36A2EB", "#FFCE56"]
           },
         ]
       },
@@ -86,16 +78,17 @@ export class HomePage {
     }).update();
   }
 
-
+  // Gets the information from the broker.
   public update() {
-    // console.log(this.mqttBrokerProvider.getData());
     this.mqttBrokerProvider.getData();
   }
 
+  // Gets the raw message for test purposes
   public getData() {
     return this.message;
   }
 
+  // Gets the last seen location 
   public getLastSeenLocation() {
     if (this.mqttBrokerProvider.lastSeenLocation().length == 0) {
       return "Undefined";
@@ -105,10 +98,12 @@ export class HomePage {
     }
   }
 
+  // Gets number of movements
   public getMovements() {
     return this.mqttBrokerProvider.movements();
   }
 
+  // Gets the time since last motion.
   public getTime() {
     if (this.time == undefined) {
       return 0;
@@ -118,6 +113,10 @@ export class HomePage {
     }
   }
 
+  /**
+   * Tracks to see if there has been movements to any rooms yet.
+   * Returns true/false accordingly
+   */
   public movementBool() {
     if (this.mqttBrokerProvider.movements().living >= 1 ||
       this.mqttBrokerProvider.movements().kitchen >= 1 ||
@@ -129,8 +128,6 @@ export class HomePage {
     else {
       return false
     }
-
-
   }
 
 }

@@ -29,7 +29,6 @@ self.toolbox.router.any('/*', self.toolbox.fastest);
 // and then only use that cached resource if your user goes offline
 self.toolbox.router.default = self.toolbox.networkFirst;
 
-
 function alertNotification() {
   self.registration.showNotification('Prolonged Inactivity Push Notification!', { body: 'There has been no motion in the house for the last 5 minutes' })
 }
@@ -40,14 +39,12 @@ self.addEventListener('homePage', function(event){
   }
 });
 
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('alertMade', function(event) {
   event.notification.close();
-    event.waitUntil(clients.matchAll({ type: 'window'}).then(function (clientList) {
-        for (var i = 0; i < clientList.length; ++i) {
-          console.log('List', clientList);
-            var client = clientList[i];
+    event.waitUntil(clients.matchAll({ type: 'window'}).then(function (clist) {
+        for (let i = 0; i < clist.length; ++i) {
+            var client = clist[i];
             if (client.url == 'http://localhost:8100/') {
-                client.postMessage('notificationClicked');
                 return client.focus();
             }
         }

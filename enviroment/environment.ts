@@ -4,17 +4,13 @@
 
 export const environment = {
   production: false,
-  /* Firebase configuration */
+
+  // Configuration for the MQTT broker
   mqttConfig: {
     host: 'barretts.ecs.vuw.ac.nz',
     portNumber: 8883,
     topic: 'swen325/a3',
     clientId: 'baihenrconnection2345', // Must be different everytime it is run
-
-    // hostname: "broker.mqttdashboard.com",
-    // portNumber: 8000,
-    // topic: 'swen325/a3',
-    // clientId: 'clientId-MrgIT6WtvC', // Must be different everytime it is run
   }
 };
 /*

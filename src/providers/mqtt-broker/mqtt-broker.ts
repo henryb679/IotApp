@@ -1,20 +1,19 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from "../../../enviroment/environment";
-import { Events } from 'ionic-angular';
-import { AlertController } from 'ionic-angular';
+import {AlertController, Events} from 'ionic-angular';
+
 /*
   Generated class for the MqttBrokerProvider provider.
 
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.
 */
+
+/**
+ * Handles all the retrieval of data from the broker.
+ */
 @Injectable()
 export class MqttBrokerProvider {
-
-  // constructor(public http: HttpClient) {
-  //   console.log('Hello MqttBrokerProvider Provider');
-  // }
 
   private mqttStatus: string = 'Disconnected';
   private mqttClient: any = null;
@@ -24,6 +23,7 @@ export class MqttBrokerProvider {
   private clientId: string = environment.mqttConfig.clientId;
 
 
+  // Stores the current battery level
   private currentBatteryLevel = {
     'living': undefined,
     'kitchen': undefined,
@@ -32,6 +32,7 @@ export class MqttBrokerProvider {
     'bedroom': undefined,
   };
 
+  // Stores the number of movements
   private noMovements = {
     'living': 0,
     'kitchen': 0,
@@ -40,25 +41,38 @@ export class MqttBrokerProvider {
     'bedroom': 0,
   };
 
+  private previousBatteryLevels = {
+    'living': [],
+    'kitchen': [],
+    'dining': [],
+    'toilet': [],
+    'bedroom': [],
+  }
+
+  private timeStamps = [];
 
   private location: string = '';
-
   public lastTimeInMotion: Date = new Date();
 
-  inactiveTime;
+  private inactiveTime;
 
   public flag: boolean = false;
 
-  d = 0;
+  private numberOfOccurances = 0;
 
+  /**
+   * Constructor for MQTT broker service file.
+   * @param events
+   * @param alert
+   */
   constructor(public events: Events, public alert: AlertController) {
     this.onMessageArrived = this.onMessageArrived.bind(this);
-
-    //setInterval(this.getAlert.bind(this), 3000);
-
     this.connect();
   }
 
+  /**
+   * Connection specifications for connecting to the PAHO instance.
+   */
   public connect() {
     this.mqttStatus = 'Connecting...';
     this.mqttClient = new Paho.MQTT.Client('localhost', 8883, '/mqtt', this.clientId);
@@ -70,186 +84,202 @@ export class MqttBrokerProvider {
 
     // connect the client
     console.log('Connecting to mqtt via websocket');
-    this.mqttClient.connect({timeout:10, useSSL:false, onSuccess:this.onConnect, onFailure:this.onFailure});
+    this.mqttClient.connect({timeout: 10, useSSL: false, onSuccess: this.onConnect, onFailure: this.onFailure});
   }
 
+  /**
+   * Disconnects the instance of the service when needed.
+   * Has not been implement but can be easily done via
+   * the implementation of a delete button in one of the files.
+   */
   public disconnect() {
-    if(this.mqttStatus == 'Connected') {
+    if (this.mqttStatus == 'Connected') {
       this.mqttStatus = 'Disconnecting...';
       this.mqttClient.disconnect();
       this.mqttStatus = 'Disconnected';
     }
   }
 
+  /**
+   * Sends a message that should be published on the broker side.
+   * Has not been implemented in this current configuration.
+   */
   public sendMessage() {
-    if(this.mqttStatus == 'Connected') {
+    if (this.mqttStatus == 'Connected') {
       this.mqttClient.publish(this.topic, this.messageToSend);
     }
   }
 
+  /**
+   * Connect to the broker and subscribes to the set topic.
+   */
   public onConnect = () => {
     console.log('Connected');
     this.mqttStatus = 'Connected';
 
-    // subscribe
+    // subscribes to the specific message
     this.mqttClient.subscribe(this.topic);
   }
 
+  /**
+   * If a failure exists, it will console log the issue.
+   * @param responseObject
+   */
   public onFailure = (responseObject) => {
     console.log('Failed to connect');
     this.mqttStatus = 'Failed to connect';
   }
 
-
+  /**
+   * If the connection is lost, it will console log the issue.
+   * @param responseObject
+   */
   public onConnectionLost = (responseObject) => {
     if (responseObject.errorCode !== 0) {
       this.mqttStatus = 'Disconnected';
     }
   }
 
+  /**
+   * When messages are arrived, they are further handled in the parseMessages function.
+   * @param message
+   */
   public onMessageArrived = (message) => {
     this.events.publish("messages", message.payloadString);
 
-    // console.log('Received message');
-    // this.message = message.payloadString;
     this.parseMessages(message.payloadString);
     this.message = message;
   }
 
-  public parseMessages(message){
-    console.log(message);
+  /**
+   * Parses the messages to get the following
+   *  - current time stamp
+   *  - sensor location
+   *  - motion status - if the patient is in that room/not
+   *  - current battery status
+   * @param message
+   */
+  public parseMessages(message) {
+    // console.log(message);
 
-
-    
     let messageArray = message.split(',');
 
     let currentTimestamp = messageArray[0];
-    let sensorLocation:string = messageArray[1];
+    let sensorLocation: string = messageArray[1];
     let motionStatus = messageArray[2];
     let batteryStatus = messageArray[3];
 
-    // console.log('Location: ' + sensorLocation + ' motionStatus: ' + motionStatus);
+    this.timeStamps.push(currentTimestamp);
 
+    // Gets the last time the user was inactive
     this.inactiveTime = this.calculateLastSeenTime(this.lastTimeInMotion);
-
-
     this.getAlert();
 
-    // if(inactiveTime >= '0'){
-      // this.presentAlert();
-    // }
-
-    // ADD CHECK if inactiveTime >= 5 -> then show push notifcation
-
     // If a motion has taken place, then track the time respective of that.
-    if(motionStatus == '1'){
+    if (motionStatus == '1') {
       this.lastTimeInMotion = new Date(currentTimestamp);
     }
 
-    if(sensorLocation == 'living'){
+    // console.log(this.previousBatteryLevels.living);
+
+    if (sensorLocation == 'living') {
       this.currentBatteryLevel.living = batteryStatus;
+      this.previousBatteryLevels.living.push(batteryStatus);
       //tracks current location
-      if(motionStatus == '1'){
+      if (motionStatus == '1') {
         this.location = sensorLocation;
-        this.noMovements.living ++;
+        this.noMovements.living++;
       }
     }
 
-    if(sensorLocation == 'kitchen'){
+    if (sensorLocation == 'kitchen') {
       this.currentBatteryLevel.kitchen = batteryStatus;
+      this.previousBatteryLevels.kitchen.push(batteryStatus);
+
       //tracks current location
-      if(motionStatus == '1'){
+      if (motionStatus == '1') {
         this.location = sensorLocation;
-        this.noMovements.kitchen ++;
+        this.noMovements.kitchen++;
       }
     }
 
-    if(sensorLocation == 'dining'){
+    if (sensorLocation == 'dining') {
       this.currentBatteryLevel.dining = batteryStatus;
+      this.previousBatteryLevels.dining.push(batteryStatus);
+
       //tracks current location
-      if(motionStatus == '1'){
+      if (motionStatus == '1') {
         this.location = sensorLocation;
-        this.noMovements.dining ++;
+        this.noMovements.dining++;
       }
     }
 
-    if(sensorLocation == 'toilet'){
+    if (sensorLocation == 'toilet') {
       this.currentBatteryLevel.toilet = batteryStatus;
+      this.previousBatteryLevels.toilet.push(batteryStatus);
+
       //tracks current location
-      if(motionStatus == '1'){
+      if (motionStatus == '1') {
         this.location = sensorLocation;
-        this.noMovements.toilet ++;
+        this.noMovements.toilet++;
       }
     }
-
-    if(sensorLocation == 'bedroom'){
+    
+    if (sensorLocation == 'bedroom') {
       this.currentBatteryLevel.bedroom = batteryStatus;
+      this.previousBatteryLevels.bedroom.push(batteryStatus);
+
       //tracks current location
-      if(motionStatus == '1'){
+      if (motionStatus == '1') {
         this.location = sensorLocation;
-        this.noMovements.bedroom ++;
+        this.noMovements.bedroom++;
       }
     }
 
   }
-  // presentAlert() {
-  //   let alert = this.alert.create({
-  //     title: 'Low battery',
-  //     subTitle: '10% of battery remaining',
-  //     buttons: ['Dismiss']
-  //   });
-  //   alert.present();
-  // }
-  
 
+  /**
+   * Gets all the previous time stamps
+   */
+  public getAllTimeStamps(){
+    return this.timeStamps;
+  }
 
-  // // ALERT
-  // async notifcation(){
-  //   const alert = await this.alert.create({
-  //     title: 'test',
-  //     subTitle: 'vewve',
-  //     buttons: ["OK"]
-  //   });
-  //   alert.present();
-  //   alert.onDidDismiss(a => 
-  //     this.returnPage().then(b => this.events.publish("homePage", false)));
-  // }
-
-  // async returnPage(){
-  //   this.events.publish("homePage", true);
-  // }
-
-  public getTimeSinceLastMotion(){
+  /**
+   * Gets the time since the last motion.
+   */
+  public getTimeSinceLastMotion() {
     return this.lastTimeInMotion;
   }
 
   /**
-   * Calculates the time difference between the time that the last motion took 
+   * Calculates the time difference between the time that the last motion took
    * place and the current time.
    */
   public calculateLastSeenTime = (startDate) => {
-    var timeDifference = new Date().getTime() - startDate.getTime();
-    
+    let timeDifference = new Date().getTime() - startDate.getTime();
+
     return (timeDifference / 60000).toFixed(2);
-};
+  };
 
-  public getData(){
-    // console.log("DATA" + this.message);
-
+  /**
+   * Gets the raw data of the message.
+   */
+  public getData() {
     return this.message;
   }
 
   /**
    * Gets the current battery level of each room.
    */
-  public getBatteryLevel(){
+  public getBatteryLevel() {
     return this.currentBatteryLevel;
   }
 
   /**
    * Gets the last seen location of the patient
-  */
-  public lastSeenLocation(){
+   */
+  public lastSeenLocation() {
     return this.location;
   }
 
@@ -260,34 +290,35 @@ export class MqttBrokerProvider {
     return this.noMovements;
   }
 
-
-  public getT(){
-    let inactiveTime = this.calculateLastSeenTime(this.lastTimeInMotion);
-    return inactiveTime;
+  public getPreviousBatteryLevels(){
+    return this.previousBatteryLevels;
   }
 
-
-  getAlert(){
-
-    if(this.inactiveTime >= 1 && !this.flag){
-      this.d += 1;
+  /**
+   * Gets the alert message and shows it if the condition is met
+   * if no motion has occurred for 5mins - it should alert back to the user.
+   */
+  getAlert() {
+    if (this.inactiveTime >= 1 && !this.flag) {
+      this.numberOfOccurances += 1;
     }
 
-   if(this.d === 1 && !this.flag){
-    let alert = this.alert.create({
-          title: 'Prolonged Inactivity Push Notification',
-          message: 'There has been no motion in the house for the last 5 minutes',
-          buttons: ['OK']
-        });
-        alert.present();
-        this.flag = true;
+    if (this.numberOfOccurances === 1 && !this.flag) {
+      let alert = this.alert.create({
+        title: 'Prolonged Inactivity Push Notification',
+        message: 'There has been no motion in the house for the last 5 minutes',
+        buttons: ['OK']
+      });
+      alert.present();
+      this.flag = true;
 
       alert.onDidDismiss(() => {
         this.flag = false;
 
+        // Once the alert is dismissed, the app refers the user back to the home page.
         this.events.publish("homePage", 'alertMade');
-        this.d = 0;
+        this.numberOfOccurances = 0;
       })
-   } 
+    }
   }
 }

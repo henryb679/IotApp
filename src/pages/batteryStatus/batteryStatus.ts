@@ -7,6 +7,10 @@ import { Chart } from "chart.js";
   selector: 'page-about',
   templateUrl: 'batteryStatus.html'
 })
+
+/**
+ * This class shows the current battery level
+ */
 export class BatteryStatus {
   @ViewChild("barCanvas") barCanvas: ElementRef;
 
@@ -14,6 +18,12 @@ export class BatteryStatus {
 
   private barChart: Chart;
 
+  /**
+   * Constructor
+   * @param navCtrl 
+   * @param mqttBrokerProvider 
+   * @param events 
+   */
   constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events) {
     this.events.subscribe('messages', (message) => {
       this.message = message;
@@ -21,15 +31,14 @@ export class BatteryStatus {
     });
 
     setInterval(this.getAlert.bind(this), 3000);
-
-    setInterval(this.update.bind(this), 1000);
-
   }
 
+  // Ensures the graph is loaded as soon as the page is loaded
   ionViewDidLoad(){
     this.loadBatteryGraph();
   }
 
+  // Generates the bar graph for the battery level
   loadBatteryGraph(){
     this.barChart = new Chart(this.barCanvas.nativeElement, {
       type: "horizontalBar",
@@ -38,8 +47,8 @@ export class BatteryStatus {
         datasets: [
           {
             label: "% - Current battery life",
-      
-            data: [this.getBatteryData().living, this.getBatteryData().kitchen, 
+
+            data: [this.getBatteryData().living, this.getBatteryData().kitchen,
               this.getBatteryData().dining, this.getBatteryData().toilet, this.getBatteryData().bedroom],
               backgroundColor: [
                 "#BF045B",
@@ -76,27 +85,16 @@ export class BatteryStatus {
 
   }
 
-  // public connect() {
-  //   console.log(this.mqttBrokerProvider.getData());
-  // }
-
-  public update(){
-    // console.log(this.mqttBrokerProvider.getData());
-  }
-
   public getData(){
     return this.message;
   }
 
+  // Gets battery data from the broker
   public getBatteryData(){
     return this.mqttBrokerProvider.getBatteryLevel();
   }
 
-  // // Return to the home page
-  // public returnHomePage(){
-  //   this.navCtrl.parent.select(0);
-  // }
-
+  // Gets the alert box if there no activity for 5mins
   public getAlert(){
     this.events.subscribe('homePage', (result) =>{
       if(result == 'alertMade'){
@@ -104,5 +102,5 @@ export class BatteryStatus {
       }
     })
   }
- 
+
 }

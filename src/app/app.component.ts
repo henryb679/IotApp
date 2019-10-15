@@ -7,8 +7,6 @@ import { Paho } from '../assets/js/paho-mqtt';
 
 import { TabsPage } from '../pages/tabs/tabs';
 
-import {firebase} from '@firebase/app';
-import {environment} from '../../enviroment/environment';
 
 
 @Component({
