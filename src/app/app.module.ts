@@ -4,7 +4,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { BatteryStatus } from '../pages/batteryStatus/batteryStatus';
-import { TimeSpent } from '../pages/timeSpent/timeSpent';
+import { BatteryAnalytics } from '../pages/batteryAnalytics/batteryAnalytics';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
@@ -18,7 +18,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
   declarations: [
     MyApp,
     BatteryStatus,
-    TimeSpent,
+    BatteryAnalytics,
     HomePage,
     TabsPage
   ],
@@ -34,14 +34,14 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
       outerStrokeColor: "#78C000",
       innerStrokeColor: "#C7E596",
       animationDuration: 300,
-    
+
     })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     BatteryStatus,
-    TimeSpent,
+    BatteryAnalytics,
     HomePage,
     TabsPage
   ],

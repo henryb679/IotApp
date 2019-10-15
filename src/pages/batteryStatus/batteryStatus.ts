@@ -14,22 +14,13 @@ export class BatteryStatus {
 
   private barChart: Chart;
 
-
-  
   constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events) {
-    // this.events.subscribe('homePage', (result) => {
-
-    //   // if(result){
-    //   //   this.returnHomePage();
-    //   // }
-    // });
-
     this.events.subscribe('messages', (message) => {
-      // console.log(message);
       this.message = message;
-
       this.loadBatteryGraph();
     });
+
+    setInterval(this.getAlert.bind(this), 3000);
 
     setInterval(this.update.bind(this), 1000);
 
@@ -50,12 +41,13 @@ export class BatteryStatus {
       
             data: [this.getBatteryData().living, this.getBatteryData().kitchen, 
               this.getBatteryData().dining, this.getBatteryData().toilet, this.getBatteryData().bedroom],
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-            ],
+              backgroundColor: [
+                "#BF045B",
+                "#F285C1",
+                "#16DCF2",
+                "#84D904",
+                "#F58853"
+              ],
             borderColor: [
               "rgba(255,99,132,1)",
               "rgba(54, 162, 235, 1)",
@@ -68,10 +60,6 @@ export class BatteryStatus {
         ]
       },
       options: {
-        title: {
-          display: true,
-          text: 'Battery percentage'
-        },
         scales: {
           yAxes: [
             {
@@ -104,9 +92,17 @@ export class BatteryStatus {
     return this.mqttBrokerProvider.getBatteryLevel();
   }
 
-  // Return to the home page
-  public returnHomePage(){
-    this.navCtrl.parent.select(0);
-  }
+  // // Return to the home page
+  // public returnHomePage(){
+  //   this.navCtrl.parent.select(0);
+  // }
 
+  public getAlert(){
+    this.events.subscribe('homePage', (result) =>{
+      if(result == 'alertMade'){
+        this.navCtrl.parent.select(0);
+      }
+    })
+  }
+ 
 }

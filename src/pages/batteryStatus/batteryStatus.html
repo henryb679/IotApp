@@ -6,22 +6,54 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
 
-  <ion-card>
+  <!-- <ion-card>
     <ion-card-header>Battery Levels:</ion-card-header>
     <ion-card-content>Living: {{getBatteryData().living}}</ion-card-content>
     <ion-card-content>Kitchen: {{getBatteryData().kitchen}}</ion-card-content>
     <ion-card-content>Dining: {{getBatteryData().dining}}</ion-card-content>
     <ion-card-content>Toilet: {{getBatteryData().toilet}}</ion-card-content>
     <ion-card-content>Bedroom: {{getBatteryData().bedroom}}</ion-card-content>
+  </ion-card> -->
+
+
+  <ion-card>
+    <ion-item color="dark">
+      <h2 style="color: white">Battery levels</h2>
+
+      <ion-row padding>
+        <ion-col padding>
+          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF; text-align: center;">Living: <b>{{getBatteryData().living}}</b> %
+          </p>
+        </ion-col>
+        <ion-col padding>
+          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF; text-align: center;">Kitchen: <b>{{getBatteryData().kitchen}}</b> %
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF; text-align: center;">Dining: <b>{{getBatteryData().dining}}</b> %
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF; text-align: center;">Toilet: <b>{{getBatteryData().toilet}}</b> %
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;">Bedroom: <b>{{getBatteryData().bedroom}}</b> %</p>
+        </ion-col>
+      </ion-row>
+    </ion-item>
   </ion-card>
 
-
-  <button (click)="notifcation()">eiwvnjk</button>
+  <!-- <button (click)="notifcation()">eiwvnjk</button> -->
 
   <ion-card>
     <ion-card-header>
+      <h2>Battery Percentage %</h2>
     </ion-card-header>
     <ion-card-content>
       <canvas #barCanvas></canvas>

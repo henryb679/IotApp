@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { MqttBrokerProvider } from "../../providers/mqtt-broker/mqtt-broker";
 import { Events } from 'ionic-angular';
-
+import {AlertController} from 'ionic-angular';
 import { Chart } from "chart.js";
 
 @Component({
@@ -17,7 +17,8 @@ export class HomePage {
 
   private time;
 
-  constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events) {
+  constructor(public navCtrl: NavController, public mqttBrokerProvider: MqttBrokerProvider, public events: Events,
+    public alert:AlertController) {
     this.events.subscribe('messages', (message) => {
       // console.log(message);
       this.message = message;
@@ -28,12 +29,25 @@ export class HomePage {
       //   console.log('WORKING: ' + this.lastSeen);
       // }
 
+      // if(this.time > 1){
+      //   // this.notifcation();
+      // }
+
       this.loadNoMovementsGraph();
     });
 
     setInterval(this.update.bind(this), 1000);
   }
 
+
+  async notifcation(){
+    const alert = await this.alert.create({
+      title: 'test',
+      subTitle: 'vewve',
+      buttons: ["OK"]
+    });
+    alert.present();
+  }
 
   ionViewDidLoad() {
 
@@ -56,12 +70,11 @@ export class HomePage {
             backgroundColor: [
               "#BF045B",
               "#F285C1",
-              "#7756BF",
               "#16DCF2",
               "#84D904",
               "#F58853"
             ],
-            hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#FF6384", "#36A2EB", "#FFCE56"]
+            // hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#FF6384", "#36A2EB", "#FFCE56"]
           },
         ]
       },
@@ -106,7 +119,6 @@ export class HomePage {
   }
 
   public movementBool() {
-
     if (this.mqttBrokerProvider.movements().living >= 1 ||
       this.mqttBrokerProvider.movements().kitchen >= 1 ||
       this.mqttBrokerProvider.movements().dining >= 1 ||

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 import { HomePage } from '../home/home';
 import { BatteryStatus } from '../batteryStatus/batteryStatus';
-import { TimeSpent } from '../timeSpent/timeSpent';
+import { BatteryAnalytics } from '../batteryAnalytics/batteryAnalytics';
 
 
 @Component({
@@ -12,7 +12,7 @@ export class TabsPage {
 
   tab1Root = HomePage;
   tab2Root = BatteryStatus;
-  tab3Root = TimeSpent;
+  tab3Root = BatteryAnalytics;
 
   constructor() {
 

@@ -6,16 +6,12 @@
   </ion-navbar>
 </ion-header>
 
-
-
-
 <ion-content>
 
-    <!-- <ion-card>
+  <!-- <ion-card>
         <ion-card-header>Message Received:</ion-card-header>
         <ion-card-content>{{getData()}}</ion-card-content>
       </ion-card> -->
-    
 
   <ion-card>
     <ion-item color="primary">
@@ -57,62 +53,60 @@
     <ion-card-content>{{getData()}}</ion-card-content>
   </ion-card> -->
 
-  <!-- <ion-card *ngIf="!movementBool()">
+  <ion-card *ngIf="!movementBool()">
       <ion-card-header>
-        <h2>No movements have been tracked yet.</h2>
+        <h2>No movements have been tracked yet</h2>
+        <h2>Waiting for connection</h2>
         <p>Please hold</p>
 
       </ion-card-header>
        <ion-card-content>
-          <ion-spinner style="text-align: center;"name="crescent"></ion-spinner>
-      </ion-card-content> 
-      
-      <br>
-      <br>
-      <br>
-    </ion-card> -->
+          <ion-spinner name="crescent"style="text-align: center;"></ion-spinner>
+      </ion-card-content>
+    <br>
+    <br>
+    <br>
+    </ion-card>
 
   <ion-card>
     <ion-card-header>
-      <h1>Visualization of Movements</h1>
+      <h2>Visualisation of the seniors movements</h2>
     </ion-card-header>
     <ion-card-content>
       <canvas #doughnutCanvas></canvas>
     </ion-card-content>
   </ion-card>
-  <ion-card>
 
+  <ion-card>
     <ion-item color="dark">
       <h2 style="color: white">Statistical data of # of Movements</h2>
-  
+
       <ion-row padding>
         <ion-col padding>
-          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF;">Living: <b>{{getMovements().living}}</b>
+          <p style="background-color: #BF045B; padding: 10px; color: #FFFFFF; text-align: center;">Living: <b>{{getMovements().living}}</b>
           </p>
         </ion-col>
         <ion-col padding>
-          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF">Kitchen: <b>{{getMovements().kitchen}}</b>
-          </p>
-        </ion-col>
-
-        <ion-col padding>
-          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF">Dining: <b>{{getMovements().dining}}</b>
+          <p style="background-color: #F285C1; padding: 10px; color: #FFFFFF; text-align: center;">Kitchen: <b>{{getMovements().kitchen}}</b>
           </p>
         </ion-col>
 
         <ion-col padding>
-          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF">Toilet: <b>{{getMovements().toilet}}</b>
+          <p style="background-color: #16DCF2; padding: 10px; color: #FFFFFF; text-align: center;">Dining: <b>{{getMovements().dining}}</b>
           </p>
         </ion-col>
 
         <ion-col padding>
-          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;">Bedroom:
+          <p style="background-color: #84D904; padding: 10px; color: #FFFFFF; text-align: center;">Toilet: <b>{{getMovements().toilet}}</b>
+          </p>
+        </ion-col>
+
+        <ion-col padding>
+          <p style="background-color: #F58853; padding: 10px; color: #FFFFFF; text-align: center;"> Bedroom:
             <b>{{getMovements().bedroom}}</b></p>
         </ion-col>
       </ion-row>
     </ion-item>
   </ion-card>
-
-
 
 </ion-content>

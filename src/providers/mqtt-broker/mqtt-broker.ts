@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {environment} from "../../../enviroment/environment";
 import { Events } from 'ionic-angular';
-import { P } from '@angular/core/src/render3';
+import { AlertController } from 'ionic-angular';
 /*
   Generated class for the MqttBrokerProvider provider.
 
@@ -45,17 +45,24 @@ export class MqttBrokerProvider {
 
   public lastTimeInMotion: Date = new Date();
 
+  inactiveTime;
 
-  constructor(public events: Events) {
+  public flag: boolean = false;
+
+  d = 0;
+
+  constructor(public events: Events, public alert: AlertController) {
     this.onMessageArrived = this.onMessageArrived.bind(this);
+
+    //setInterval(this.getAlert.bind(this), 3000);
 
     this.connect();
   }
 
   public connect() {
     this.mqttStatus = 'Connecting...';
-    // this.mqttClient = new Paho.MQTT.Client('broker.mqttdashboard.com', 8000, '/mqtt', this.clientId);
-    this.mqttClient = new Paho.MQTT.Client('barretts.ecs.vuw.ac.nz', 8883, '/mqtt', this.clientId);
+    this.mqttClient = new Paho.MQTT.Client('localhost', 8883, '/mqtt', this.clientId);
+    // this.mqttClient = new Paho.MQTT.Client('barretts.ecs.vuw.ac.nz', 8883, '/mqtt', this.clientId);
 
     // set callback handlers
     this.mqttClient.onConnectionLost = this.onConnectionLost;
@@ -102,6 +109,7 @@ export class MqttBrokerProvider {
 
   public onMessageArrived = (message) => {
     this.events.publish("messages", message.payloadString);
+
     // console.log('Received message');
     // this.message = message.payloadString;
     this.parseMessages(message.payloadString);
@@ -110,6 +118,8 @@ export class MqttBrokerProvider {
 
   public parseMessages(message){
     console.log(message);
+
+
     
     let messageArray = message.split(',');
 
@@ -120,19 +130,22 @@ export class MqttBrokerProvider {
 
     // console.log('Location: ' + sensorLocation + ' motionStatus: ' + motionStatus);
 
-    var inactiveTime = this.calculateLastSeenTime(this.lastTimeInMotion);
+    this.inactiveTime = this.calculateLastSeenTime(this.lastTimeInMotion);
+
+
+    this.getAlert();
+
+    // if(inactiveTime >= '0'){
+      // this.presentAlert();
+    // }
 
     // ADD CHECK if inactiveTime >= 5 -> then show push notifcation
 
     // If a motion has taken place, then track the time respective of that.
     if(motionStatus == '1'){
-      // console.log('working');
       this.lastTimeInMotion = new Date(currentTimestamp);
     }
 
-
-
-    // console.log(motionStatus == '1');
     if(sensorLocation == 'living'){
       this.currentBatteryLevel.living = batteryStatus;
       //tracks current location
@@ -178,20 +191,19 @@ export class MqttBrokerProvider {
       }
     }
 
-    // TODO track number of movements
-    // using noMovements
-
-    // TODO
-    // using currentLocation
-    // this.location = sensorLocation;
-
-    // TODO time since last motion
-    // return messageArray;
-    // this.location = tempSet;
   }
+  // presentAlert() {
+  //   let alert = this.alert.create({
+  //     title: 'Low battery',
+  //     subTitle: '10% of battery remaining',
+  //     buttons: ['Dismiss']
+  //   });
+  //   alert.present();
+  // }
+  
 
-  // ALERT
 
+  // // ALERT
   // async notifcation(){
   //   const alert = await this.alert.create({
   //     title: 'test',
@@ -246,5 +258,36 @@ export class MqttBrokerProvider {
    */
   public movements() {
     return this.noMovements;
+  }
+
+
+  public getT(){
+    let inactiveTime = this.calculateLastSeenTime(this.lastTimeInMotion);
+    return inactiveTime;
+  }
+
+
+  getAlert(){
+
+    if(this.inactiveTime >= 1 && !this.flag){
+      this.d += 1;
+    }
+
+   if(this.d === 1 && !this.flag){
+    let alert = this.alert.create({
+          title: 'Prolonged Inactivity Push Notification',
+          message: 'There has been no motion in the house for the last 5 minutes',
+          buttons: ['OK']
+        });
+        alert.present();
+        this.flag = true;
+
+      alert.onDidDismiss(() => {
+        this.flag = false;
+
+        this.events.publish("homePage", 'alertMade');
+        this.d = 0;
+      })
+   } 
   }
 }
